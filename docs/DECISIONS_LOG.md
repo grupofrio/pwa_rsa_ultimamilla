@@ -7,4 +7,5 @@
 5. **Leaflet + OSM** para el mapa. El dominio no se acopla al proveedor.
 6. **Storybook** sustituido por `/catalogo`.
 7. **PWA** instalable; no se finge offline de escrituras críticas.
-8. Contratos pendientes: lista en `SEBASTIAN_API_REQUESTS.md`.
+9. El mock guarda solo `userId` / flags de expiración y red en `sessionStorage` para sobrevivir un reload. No es base de datos operativa ni un secreto.
+
