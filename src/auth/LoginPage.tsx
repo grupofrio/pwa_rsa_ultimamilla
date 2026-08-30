@@ -35,21 +35,34 @@ export function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-dvh place-items-center bg-[var(--va-navy)] p-4 text-white">
-      <section className="w-full max-w-lg rounded-[20px] bg-white p-6 text-[var(--va-ink)] shadow-[var(--va-shadow)]">
-        <img src="/brand/via-agil-control-logo.png" alt="Vía Ágil Control" className="mx-auto h-16 object-contain" />
-        <h1 className="mt-4 text-center text-2xl font-bold text-[var(--va-navy)]">Vía Ágil Control</h1>
-        <p className="text-center text-sm text-[var(--va-muted)]">Inteligencia operativa de última milla</p>
+    <main className="min-h-dvh bg-[var(--va-navy)] p-4 text-white lg:grid lg:place-items-center lg:p-8">
+      <section className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-[28px] border border-white/10 bg-white shadow-2xl lg:grid-cols-[1.05fr_.95fr]">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#071b2b] via-[#0b3450] to-[#08766e] p-8 lg:p-12">
+          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full border-[40px] border-white/5" />
+          <img src="/brand/via-agil-control-logo.png" alt="Vía Ágil Control" className="relative h-16 w-64 object-contain object-left brightness-0 invert" />
+          <div className="relative mt-16 max-w-lg">
+            <p className="text-sm font-semibold uppercase tracking-[.18em] text-[var(--va-teal)]">Operación bajo control</p>
+            <h1 className="mt-3 text-4xl font-bold leading-tight lg:text-5xl">Toda tu última milla, en una sola vista.</h1>
+            <p className="mt-5 text-base leading-relaxed text-white/70">Despacho, custodia, GPS, combustible, mantenimiento, liquidaciones y rentabilidad conectados por ruta y unidad.</p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {['Torre operativa en vivo','Prueba de entrega y aclaraciones','Corte diario por camioneta','Copiloto y decisiones gerenciales'].map((item) => <div key={item} className="flex items-center gap-2 rounded-xl bg-white/10 p-3 text-sm"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--va-teal)] font-bold text-[var(--va-navy)]">✓</span>{item}</div>)}
+            </div>
+          </div>
+        </div>
+        <div className="p-6 text-[var(--va-ink)] sm:p-8 lg:p-12">
+          <p className="text-sm font-semibold text-[var(--va-teal-700)]">VÍA ÁGIL CONTROL</p>
+          <h2 className="mt-2 text-3xl font-bold text-[var(--va-navy)]">Bienvenido</h2>
+          <p className="mt-2 text-sm text-[var(--va-muted)]">Ingresa a tu espacio de trabajo autorizado.</p>
         {session.status === 'expired' ? (
           <p className="mt-3 rounded-lg bg-[#fde8e6] p-3 text-sm text-[var(--va-danger)]" role="status">
             La sesión expiró. El destino original se conservó de forma segura y se pedirá de nuevo tras autenticarte.
           </p>
         ) : null}
-        <form className="mt-5 space-y-3" onSubmit={(event) => void onSubmit(event)}>
+        <form className="mt-7 space-y-3" onSubmit={(event) => void onSubmit(event)}>
           <label className="block text-sm font-medium">
-            Correo nominativo
+            Correo de acceso
             <input
-              className="mt-1 min-h-11 w-full rounded-xl border border-[var(--va-line)] px-3"
+              className="mt-2 min-h-12 w-full rounded-xl border border-[var(--va-line)] bg-[var(--va-soft)] px-4"
               type="email"
               autoComplete="username"
               value={email}
@@ -64,18 +77,18 @@ export function LoginPage() {
             </p>
           ) : null}
           <Button type="submit" className="w-full">
-            Entrar
+            Entrar a Vía Ágil
           </Button>
         </form>
         {import.meta.env.DEV ? (
-          <div className="mt-5 border-t border-dashed border-[var(--va-line)] pt-4" data-testid="simulador-de-sesion-mock">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--va-muted)]">Simulador de sesión (mock)</p>
-            <div className="mt-2 grid gap-2">
+          <div className="mt-6 border-t border-[var(--va-line)] pt-5" data-testid="simulador-de-sesion-mock">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--va-muted)]">Accesos para demostración</p>
+            <div className="mt-3 grid max-h-64 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
               {DEV_USERS.map(([name, userEmail]) => (
                 <button
                   key={userEmail}
                   type="button"
-                  className="min-h-11 rounded-xl border border-[var(--va-line)] px-3 text-left text-sm hover:bg-[#f3fbf9]"
+                  className={`min-h-11 rounded-xl border px-3 text-left text-sm transition ${email === userEmail ? 'border-[var(--va-teal)] bg-[#effbf9]' : 'border-[var(--va-line)] hover:bg-[var(--va-soft)]'}`}
                   onClick={() => setEmail(userEmail)}
                 >
                   <strong>{name}</strong>
@@ -85,10 +98,9 @@ export function LoginPage() {
             </div>
           </div>
         ) : (
-          <p className="mt-4 text-xs text-[var(--va-muted)]">
-            El acceso de producción usa el contrato de identidad de Sebastián. Esta pantalla no guarda secretos.
-          </p>
+          <p className="mt-5 text-xs text-[var(--va-muted)]">Acceso seguro por usuario, empresa, plaza y perfil.</p>
         )}
+        </div>
       </section>
     </main>
   )

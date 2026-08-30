@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from 'react'
 
 interface ConnectionState {

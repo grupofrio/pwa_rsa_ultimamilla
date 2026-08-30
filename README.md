@@ -33,12 +33,12 @@ Abre `http://127.0.0.1:5173`. En desarrollo el adaptador **mock** está activo y
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript estricto |
 | `npm run test:coverage` | Vitest + cobertura v8 |
-| `npm run test:e2e` | Playwright: 10 escenarios × 2 viewports (desktop 1440×900 y tablet 834×1112) |
+| `npm run test:e2e` | Playwright: flujos críticos, accesibilidad y capturas en desktop y tablet (24 pruebas) |
 | `npm run test:e2e:pwa` | Playwright contra `vite preview` (manifiesto + service worker) |
 | `npm run check:mock-leak` | impide sentinels de mock en `dist/` |
 | `npm run check:secrets` | impide `ODOO_PASSWORD` y nombres prohibidos en el árbol de frontend |
 
-Los 20 resultados de `test:e2e` de flujos críticos son **10 escenarios ejecutados en dos viewports**, no 20 escenarios distintos. Hay specs extra de capturas y accesibilidad.
+La matriz final y el recorrido por perfil están documentados en `docs/SCREEN_BY_SCREEN_AUDIT.md`, `docs/ROLE_CAPABILITY_MATRIX.md` y `docs/ENTERPRISE_UX_AUDIT.md`.
 
 ## Arquitectura
 
@@ -54,4 +54,4 @@ Ver `docs/FRONTEND_ARCHITECTURE.md`. Contratos para Sebastián: `docs/SEBASTIAN_
 
 ## Estado
 
-Esta entrega usa **mocks etiquetados**. No hay integración real con Odoo, GPS ni Mercado Libre.
+El frontend está **listo para demostración integral** y usa datos simulados etiquetados. Las pantallas y acciones del recorrido comercial están completas; la integración real con el backend, Odoo, GPS y Mercado Libre permanece fuera de este repositorio.

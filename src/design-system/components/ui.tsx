@@ -1,23 +1,24 @@
 import type { DataQuality } from '@/entities/states'
 import { DATA_QUALITY_LABELS } from '@/entities/states'
 import { freshnessLabel } from '@/format'
-import { AlertTriangle, CheckCircle2, Info, MinusCircle } from 'lucide-react'
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { AlertTriangle, CheckCircle2, Info, MinusCircle, Search, TrendingDown, TrendingUp } from 'lucide-react'
+import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
 
 export function Button({
   children,
   variant = 'primary',
+  className = '',
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'danger' | 'ghost' }) {
   const styles = {
-    primary: 'bg-[var(--va-teal)] text-[var(--va-navy)] hover:bg-[var(--va-teal-700)] hover:text-white',
-    secondary: 'bg-[var(--va-navy)] text-white hover:bg-[var(--va-navy-600)]',
-    danger: 'bg-[var(--va-danger)] text-white',
-    ghost: 'bg-transparent text-[var(--va-navy)] border border-[var(--va-line)]',
+    primary: 'border border-[var(--va-navy)] bg-[var(--va-navy)] text-white shadow-sm hover:bg-[var(--va-navy-400)]',
+    secondary: 'border border-[#a9bac7] bg-white text-[var(--va-navy)] hover:border-[var(--va-navy)] hover:bg-[var(--va-soft)]',
+    danger: 'border border-[var(--va-danger)] bg-[var(--va-danger)] text-white shadow-sm hover:brightness-90',
+    ghost: 'border border-transparent bg-transparent text-[var(--va-ink)] hover:border-[var(--va-line)] hover:bg-[var(--va-soft)]',
   }[variant]
   return (
     <button
-      className={`inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${styles}`}
+      className={`inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--va-teal)] focus-visible:ring-offset-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 ${styles} ${className}`}
       {...props}
     >
       {children}
@@ -51,17 +52,32 @@ export function KpiCard({
   value,
   hint,
   provenance,
+  trend,
+  icon,
 }: {
   label: string
   value: string
   hint?: string
   provenance?: { source: string; quality: DataQuality; updatedAt: string }
+  trend?: { value: string; direction: 'up' | 'down'; positive?: boolean }
+  icon?: ReactNode
 }) {
+  const trendGood = trend?.positive ?? trend?.direction === 'up'
   return (
-    <article className="rounded-[var(--va-radius)] bg-[var(--va-surface)] p-4 shadow-[var(--va-shadow)]">
-      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--va-muted)]">{label}</p>
+    <article className="rounded-[var(--va-radius)] border border-[var(--va-line)] bg-[var(--va-surface)] p-4 shadow-[var(--va-shadow)]">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--va-muted)]">{label}</p>
+        {icon ? <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--va-soft)] text-[var(--va-teal-700)]">{icon}</span> : null}
+      </div>
       <p className="mt-2 text-2xl font-bold tabular">{value}</p>
-      {hint ? <p className="mt-1 text-sm text-[var(--va-muted)]">{hint}</p> : null}
+      <div className="mt-1 flex flex-wrap items-center gap-2">
+        {trend ? (
+          <span className={`inline-flex items-center gap-1 text-xs font-semibold ${trendGood ? 'text-[var(--va-success)]' : 'text-[var(--va-danger)]'}`}>
+            {trend.direction === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />} {trend.value}
+          </span>
+        ) : null}
+        {hint ? <p className="text-sm text-[var(--va-muted)]">{hint}</p> : null}
+      </div>
       {provenance ? <Provenance {...provenance} /> : null}
     </article>
   )
@@ -92,7 +108,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   return (
     <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--va-navy)]">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--va-ink)] lg:text-[28px]">{title}</h1>
         {subtitle ? <p className="mt-1 max-w-3xl text-sm text-[var(--va-muted)]">{subtitle}</p> : null}
       </div>
       {actions}
@@ -154,10 +170,10 @@ export function DataTable<T extends { id: string }>({
   onRowClick?: (row: T) => void
 }) {
   return (
-    <div className="overflow-x-auto rounded-[var(--va-radius)] bg-[var(--va-surface)] shadow-[var(--va-shadow)]">
+    <div className="overflow-x-auto rounded-[var(--va-radius)] border border-[var(--va-line)] bg-[var(--va-surface)] shadow-[var(--va-shadow)]">
       <table className="min-w-full text-left text-sm">
         <caption className="sr-only">{caption}</caption>
-        <thead className="bg-[#eef3f7] text-xs uppercase tracking-wide text-[var(--va-muted)]">
+        <thead className="bg-[var(--va-soft)] text-xs uppercase tracking-wide text-[var(--va-muted)]">
           <tr>
             {columns.map((column) => (
               <th key={column.key} className="px-3 py-3 font-semibold" scope="col">
@@ -167,7 +183,9 @@ export function DataTable<T extends { id: string }>({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
+          {rows.length === 0 ? (
+            <tr><td colSpan={columns.length} className="px-4 py-10 text-center text-sm text-[var(--va-muted)]">No hay registros para los filtros seleccionados.</td></tr>
+          ) : rows.map((row) => (
             <tr
               key={row.id}
               className={onRowClick ? 'cursor-pointer border-t border-[var(--va-line)] hover:bg-[#f3fbf9]' : 'border-t border-[var(--va-line)]'}
@@ -248,6 +266,98 @@ export function MockBanner({ children }: { children: ReactNode }) {
   return (
     <div className="rounded-lg border border-dashed border-[var(--va-amber)] bg-[#fff8ea] px-3 py-2 text-xs text-[var(--va-navy)]" data-testid="mock-banner">
       Datos simulados · {children}
+    </div>
+  )
+}
+
+export function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <section className={`rounded-[var(--va-radius)] border border-[var(--va-line)] bg-[var(--va-surface)] p-4 shadow-[var(--va-shadow)] ${className}`}>{children}</section>
+}
+
+export function SectionHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
+  return (
+    <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h2 className="font-bold text-[var(--va-ink)]">{title}</h2>
+        {subtitle ? <p className="mt-0.5 text-xs text-[var(--va-muted)]">{subtitle}</p> : null}
+      </div>
+      {action}
+    </div>
+  )
+}
+
+export function ProgressBar({ value, label, tone = 'teal' }: { value: number; label?: string; tone?: 'teal' | 'amber' | 'danger' | 'navy' }) {
+  const colors = { teal: 'bg-[var(--va-teal)]', amber: 'bg-[var(--va-amber)]', danger: 'bg-[var(--va-danger)]', navy: 'bg-[var(--va-navy-400)]' }
+  const safe = Math.max(0, Math.min(100, value))
+  return (
+    <div>
+      {label ? <div className="mb-1 flex justify-between text-xs text-[var(--va-muted)]"><span>{label}</span><span className="font-semibold tabular">{safe}%</span></div> : null}
+      <div
+        className="h-2 overflow-hidden rounded-full bg-[var(--va-soft)]"
+        role="progressbar"
+        aria-label={label ?? `Progreso ${safe}%`}
+        aria-valuenow={safe}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div className={`h-full rounded-full ${colors[tone]}`} style={{ width: `${safe}%` }} />
+      </div>
+    </div>
+  )
+}
+
+export function SearchField({ className = '', ...props }: InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <label className={`relative block min-w-56 ${className}`}>
+      <span className="sr-only">{props['aria-label'] ?? 'Buscar'}</span>
+      <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--va-muted)]" size={17} />
+      <input className="min-h-11 w-full rounded-xl border border-[var(--va-line)] bg-[var(--va-surface)] pl-10 pr-3 text-sm" {...props} />
+    </label>
+  )
+}
+
+export function SelectField({ className = '', children, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
+  return <select className={`min-h-11 rounded-xl border border-[var(--va-line)] bg-[var(--va-surface)] px-3 text-sm text-[var(--va-ink)] ${className}`} {...props}>{children}</select>
+}
+
+export function FilterBar({ children }: { children: ReactNode }) {
+  return <div className="flex flex-wrap items-center gap-2 rounded-[var(--va-radius)] border border-[var(--va-line)] bg-[var(--va-surface)] p-3">{children}</div>
+}
+
+export function StatusMessage({ children, tone = 'ok' }: { children: ReactNode; tone?: 'ok' | 'warn' | 'danger' | 'info' }) {
+  const styles = {
+    ok: 'border-[#a7e2ce] bg-[#e9f8f2] text-[var(--va-success)]',
+    warn: 'border-[#f6d79b] bg-[#fff7e8] text-[var(--va-warning)]',
+    danger: 'border-[#f5b7b1] bg-[#fff0ef] text-[var(--va-danger)]',
+    info: 'border-[#b9d8f2] bg-[#eef7ff] text-[var(--va-info)]',
+  }
+  return <p role="status" className={`rounded-xl border px-3 py-2 text-sm font-medium ${styles[tone]}`}>{children}</p>
+}
+
+export function MiniTrend({ values, color = 'var(--va-teal)', height = 120 }: { values: number[]; color?: string; height?: number }) {
+  const width = 600
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const range = Math.max(1, max - min)
+  const points = values.map((value, index) => `${(index / Math.max(1, values.length - 1)) * width},${height - 12 - ((value - min) / range) * (height - 28)}`).join(' ')
+  const area = `0,${height} ${points} ${width},${height}`
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img" aria-label="Tendencia del periodo">
+      <defs><linearGradient id="vaTrendFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={color} stopOpacity=".28"/><stop offset="1" stopColor={color} stopOpacity="0"/></linearGradient></defs>
+      <polygon points={area} fill="url(#vaTrendFill)" />
+      <polyline points={points} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function Donut({ value, label, detail }: { value: number; label: string; detail: string }) {
+  const safe = Math.max(0, Math.min(100, value))
+  return (
+    <div className="flex items-center gap-4">
+      <div className="grid h-28 w-28 shrink-0 place-items-center rounded-full" style={{ background: `conic-gradient(var(--va-teal) ${safe}%, var(--va-soft) 0)` }}>
+        <div className="grid h-20 w-20 place-items-center rounded-full bg-[var(--va-surface)] text-center"><strong className="text-xl tabular">{safe}%</strong></div>
+      </div>
+      <div><p className="font-semibold">{label}</p><p className="text-sm text-[var(--va-muted)]">{detail}</p></div>
     </div>
   )
 }

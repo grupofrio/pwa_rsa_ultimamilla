@@ -18,31 +18,23 @@ export function SimulatorDock() {
   }
 
   return (
-    <div className="sticky bottom-0 border-t border-dashed border-[var(--va-amber)] bg-[#fff8ea] px-4 py-2 text-xs" data-testid="simulator-dock">
-      <div className="flex items-center justify-between gap-2">
-        <p>
-          Simulador de escenarios · <code>VIA_AGIL_MOCK_SENTINEL</code> · no disponible en producción
-        </p>
-        <Button type="button" variant="ghost" onClick={() => setOpen((value) => !value)}>
+    <div className="fixed bottom-4 right-4 z-40 text-xs opacity-0 transition-opacity hover:opacity-100 focus-within:opacity-100" data-testid="simulator-dock">
+      <div className="flex flex-col items-end gap-2">
+        {open ? (
+          <div className="max-w-md rounded-2xl border border-[var(--va-line)] bg-white p-3 shadow-2xl">
+            <p className="mb-2 font-semibold text-[var(--va-navy)]">Herramientas de demostración <span className="sr-only">VIA_AGIL_MOCK_SENTINEL</span></p>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().expireSession())}>Simular sesión expirada</Button>
+              <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().setNetwork(false))}>Cortar red</Button>
+              <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().setNetwork(true))}>Restaurar red</Button>
+              <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().reset())}>Reiniciar escenario</Button>
+            </div>
+          </div>
+        ) : null}
+        <Button className="rounded-full bg-white shadow-lg" type="button" variant="ghost" onClick={() => setOpen((value) => !value)}>
           {open ? 'Ocultar' : 'Mostrar'}
         </Button>
       </div>
-      {open ? (
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().expireSession())}>
-            Simular sesión expirada
-          </Button>
-          <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().setNetwork(false))}>
-            Cortar red
-          </Button>
-          <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().setNetwork(true))}>
-            Restaurar red
-          </Button>
-          <Button type="button" variant="ghost" onClick={() => void run(() => getMockAdapter().reset())}>
-            Reiniciar escenario
-          </Button>
-        </div>
-      ) : null}
     </div>
   )
 }

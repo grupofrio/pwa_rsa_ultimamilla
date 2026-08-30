@@ -36,8 +36,38 @@ describe('capabilities', () => {
   it('csc can prepare but not authorize fuel', () => {
     const caps = capabilitiesFor('csc_operator')
     expect(can(caps, 'settlement.prepare')).toBe(true)
+    expect(can(caps, 'maintenance.manage')).toBe(true)
+    expect(can(caps, 'expense.reconcile')).toBe(true)
+    expect(can(caps, 'claim.manage')).toBe(true)
     expect(can(caps, 'fuel.authorize')).toBe(false)
+    expect(can(caps, 'invoice.approve')).toBe(false)
+    expect(can(caps, 'payroll.incident.approve')).toBe(false)
     expect(canAny(caps, ['csc.tenant.switch'])).toBe(true)
+  })
+
+  it('assigns the agreed operational responsibilities by profile', () => {
+    const dispatcher = capabilitiesFor('dispatcher')
+    expect(canAll(dispatcher, ['route.assign', 'route.reconcile_load', 'package.return.manage', 'claim.manage'])).toBe(true)
+
+    const supervisor = capabilitiesFor('supervisor')
+    expect(canAll(supervisor, ['supervision.view', 'alert.resolve', 'talent.manage', 'payroll.incident.view'])).toBe(true)
+    expect(can(supervisor, 'payroll.incident.approve')).toBe(false)
+
+    const fleet = capabilitiesFor('fleet_coordinator')
+    expect(canAll(fleet, ['fleet.manage', 'maintenance.manage', 'fuel.view'])).toBe(true)
+
+    const admin = capabilitiesFor('admin_finance')
+    expect(canAll(admin, ['fuel.authorize', 'maintenance.manage', 'expense.reconcile', 'payroll.incident.approve', 'invoice.approve'])).toBe(true)
+
+    const manager = capabilitiesFor('manager')
+    expect(canAll(manager, ['supervision.view', 'alert.view', 'expense.view', 'talent.incident.view', 'pnl.view'])).toBe(true)
+    expect(can(manager, 'expense.reconcile')).toBe(false)
+  })
+
+  it('keeps platform administration isolated from client operations', () => {
+    const caps = capabilitiesFor('platform_admin')
+    expect(canAll(caps, ['config.view', 'config.manage', 'support.view', 'audit.view'])).toBe(true)
+    expect(canAny(caps, ['route.view', 'fleet.view', 'expense.view', 'management.view', 'pnl.view'])).toBe(false)
   })
 
   it('canInScope rejects other company', () => {

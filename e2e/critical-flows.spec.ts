@@ -28,7 +28,7 @@ test.describe('flujos críticos', () => {
     await page.getByTestId('resolve-al_dev_2404').click()
     await page.getByLabel('Motivo').fill('Conductor confirmó retorno a secuencia oficial')
     await page.getByRole('dialog').getByRole('button', { name: 'Resolver' }).click()
-    await expect(page.getByText('resolved')).toBeVisible()
+    await expect(page.getByRole('table').getByText('Resuelta', { exact: true })).toBeVisible()
   })
 
   test('administrador autoriza combustible con motivo', async ({ page }) => {
@@ -64,7 +64,7 @@ test.describe('flujos críticos', () => {
     const menu = page.getByRole('button', { name: 'Abrir menú' })
     if (await menu.isVisible()) await menu.click()
     await page.getByRole('link', { name: 'Auditoría' }).click()
-    await expect(page.getByText('csc.tenant.switch')).toBeVisible()
+    await expect(page.getByText('Cambió de cliente')).toBeVisible()
   })
 
   test('usuario sin capacidad no ve ni entra por URL', async ({ page }) => {

@@ -4,7 +4,7 @@ import { LoginPage } from '@/auth/LoginPage'
 import type { Capability } from '@/auth/capabilities'
 import { HomePage } from '@/modules/dispatch/HomePage'
 import { DispatchAssignmentsPage, DispatchLoadPage, DispatchPage } from '@/modules/dispatch/DispatchPage'
-import { PackageDetailPage, PackagesPage, ReturnsPage, RouteDetailPage } from '@/modules/packages/PackagesPage'
+import { ClaimsPage, PackageDetailPage, PackagesPage, ReturnsPage, RouteDetailPage } from '@/modules/packages/PackagesPage'
 import { TowerPage } from '@/modules/control-tower/TowerPage'
 import { AlertsPage, SupervisionPage } from '@/modules/control-tower/AlertsPage'
 import { FleetPage, MaintenancePage, VehicleDetailPage } from '@/modules/fleet/FleetPage'
@@ -52,6 +52,7 @@ export function AppRoutes() {
         <Route path="/paquetes" element={<Gate capability="package.view"><PackagesPage /></Gate>} />
         <Route path="/paquetes/:id" element={<Gate capability="package.view"><PackageDetailPage /></Gate>} />
         <Route path="/devoluciones" element={<Gate capability="package.return"><ReturnsPage /></Gate>} />
+        <Route path="/aclaraciones" element={<Gate capability="claim.view"><ClaimsPage /></Gate>} />
         <Route path="/torre" element={<Gate capability="tower.view"><TowerPage /></Gate>} />
         <Route path="/torre/rutas/:id" element={<Gate capability="route.view"><RouteDetailPage /></Gate>} />
         <Route path="/supervision" element={<Gate capability="supervision.view"><SupervisionPage /></Gate>} />
@@ -62,7 +63,7 @@ export function AppRoutes() {
         <Route path="/combustible" element={<Gate capability="fuel.view"><FuelPage /></Gate>} />
         <Route path="/gastos" element={<Gate capability="expense.view"><ExpensesPage /></Gate>} />
         <Route path="/talento" element={<Gate capability="talent.view"><TalentPage /></Gate>} />
-        <Route path="/talento/incidencias" element={<Gate capability="talent.incident.capture"><TalentIncidentsPage /></Gate>} />
+        <Route path="/talento/incidencias" element={<Gate capability="talent.incident.view"><TalentIncidentsPage /></Gate>} />
         <Route path="/liquidaciones" element={<Gate capability="settlement.view"><SettlementsPage /></Gate>} />
         <Route path="/liquidaciones/rutas/:id" element={<Gate capability="settlement.view"><SettlementRoutePage /></Gate>} />
         <Route path="/facturacion" element={<Gate capability="billing.view"><BillingPage /></Gate>} />
@@ -73,7 +74,7 @@ export function AppRoutes() {
         <Route path="/soporte" element={<Gate capability="support.view"><SupportPage /></Gate>} />
         <Route path="/auditoria" element={<Gate capability="audit.view"><AuditPage /></Gate>} />
         <Route path="/configuracion" element={<Gate capability="config.view"><ConfigPage /></Gate>} />
-        <Route path="/catalogo" element={<CatalogPage />} />
+        <Route path="/catalogo" element={<Gate capability="config.view"><CatalogPage /></Gate>} />
       </Route>
       <Route path="/" element={<Navigate to="/inicio" replace />} />
       <Route path="*" element={<Navigate to="/inicio" replace />} />
