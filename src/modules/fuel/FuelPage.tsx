@@ -17,10 +17,15 @@ export function FuelPage() {
   const authorize = useMutation({
     mutationFn: async () => {
       if (!api || !target) return
+      const row = query.data?.items.find((item) => item.id === target)
+      const estimate = row?.fuelEstimate
+      if (!estimate?.amount || estimate.liters == null) {
+        throw new Error('No hay estimado de combustible del backend para esta ruta.')
+      }
       return api.authorizeFuel({
         routeId: target,
-        amount: 420,
-        liters: 50,
+        amount: estimate.amount.amount,
+        liters: estimate.liters,
         station: 'Estación autorizada GDL',
         reason,
         capability: 'fuel.authorize',
@@ -54,8 +59,18 @@ export function FuelPage() {
           { key: 'd', header: 'Conductor', render: (row) => row.driver.name },
           {
             key: 's',
-            header: 'Sugerencia',
-            render: () => <span className="tabular">{formatMxn(420, { estimate: true })} · 50 L</span>,
+            header: 'Sugerencia (backend)',
+            render: (row) => {
+              const estimate = row.fuelEstimate
+              if (!estimate?.amount || estimate.liters == null) {
+                return 'Sin estimado del backend'
+              }
+              return (
+                <span className="tabular">
+                  {formatMxn(estimate.amount.amount, { estimate: estimate.amount.kind !== 'official' })} · {estimate.liters} L
+                </span>
+              )
+            },
           },
           {
             key: 'a',

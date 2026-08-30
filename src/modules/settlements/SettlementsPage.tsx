@@ -1,6 +1,6 @@
 import { useAuth } from '@/auth/AuthProvider'
 import { Badge, DataTable, KpiCard, MockBanner, PageHeader, Skeleton } from '@/design-system/components/ui'
-import { ML_LIQUIDATION_LABELS, ROUTE_STATE_LABELS } from '@/entities/states'
+import { isOfficiallyLiquidatable, ML_LIQUIDATION_LABELS, ROUTE_STATE_LABELS } from '@/entities/states'
 import { formatMxn } from '@/format'
 import { useApi } from '@/services/api/useApi'
 import { useQuery } from '@tanstack/react-query'
@@ -31,8 +31,18 @@ export function SettlementsPage() {
         columns={[
           { key: 'f', header: 'Folio', render: (row) => row.folio },
           { key: 's', header: 'Estado operativo', render: (row) => ROUTE_STATE_LABELS[row.state] },
-          { key: 'm', header: 'Liquidación ML', render: (row) => <Badge tone={row.mlLiquidationState === 'confirmed' ? 'ok' : 'warn'}>{ML_LIQUIDATION_LABELS[row.mlLiquidationState]}</Badge> },
-          { key: 'l', header: '¿Liquidable?', render: (row) => (row.state === 'liquidatable' || row.state === 'settled' ? 'Sí (oficial)' : 'No') },
+          {
+            key: 'm',
+            header: 'ML (tentativo, no contrato)',
+            render: (row) => (
+              <Badge tone="neutral">{ML_LIQUIDATION_LABELS[row.mlLiquidationState]}</Badge>
+            ),
+          },
+          {
+            key: 'l',
+            header: '¿Liquidable?',
+            render: (row) => (isOfficiallyLiquidatable(row.state) ? 'Sí (estado oficial de backend)' : 'No'),
+          },
         ]}
       />
     </div>
@@ -47,13 +57,13 @@ export function SettlementRoutePage() {
   if (query.isLoading) return <Skeleton />
   const route = query.data
   if (!route) return <PageHeader title="Ruta no encontrada" />
-  const liquidatable = route.mlLiquidationState === 'confirmed' && (route.state === 'liquidatable' || route.state === 'settled')
+  const liquidatable = isOfficiallyLiquidatable(route.state)
   return (
     <div className="space-y-4">
       <PageHeader title={`Liquidación ${route.folio}`} subtitle={route.commercial.note} />
       <dl className="grid gap-3 rounded-[var(--va-radius)] bg-[var(--va-surface)] p-4 md:grid-cols-2" data-testid="settlement-detail">
         <div><dt className="text-xs uppercase text-[var(--va-muted)]">Estado de ruta</dt><dd>{ROUTE_STATE_LABELS[route.state]}</dd></div>
-        <div><dt className="text-xs uppercase text-[var(--va-muted)]">Fuente oficial ML</dt><dd>{ML_LIQUIDATION_LABELS[route.mlLiquidationState]}</dd></div>
+        <div><dt className="text-xs uppercase text-[var(--va-muted)]">Campo tentativo ML (no contrato)</dt><dd>{ML_LIQUIDATION_LABELS[route.mlLiquidationState]}</dd></div>
         <div><dt className="text-xs uppercase text-[var(--va-muted)]">Banda</dt><dd>{route.commercial.tariffBandLabel}</dd></div>
         <div><dt className="text-xs uppercase text-[var(--va-muted)]">Costo Vía Ágil</dt><dd>{formatMxn(route.commercial.viaAgilCost.amount)}</dd></div>
         <div><dt className="text-xs uppercase text-[var(--va-muted)]">Ingreso esperado</dt><dd>{formatMxn(route.commercial.expectedRevenue.amount, { estimate: route.commercial.expectedRevenue.kind === 'estimate' })}</dd></div>

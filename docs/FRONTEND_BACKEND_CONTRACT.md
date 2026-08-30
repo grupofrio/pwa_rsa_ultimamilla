@@ -18,4 +18,6 @@ Autenticación esperada: token opaco de usuario nominativo en header (no JWT inv
 
 Errores: 401 sesión, 403 capacidad/scope, 409 regla de negocio (diferencia de carga, falta autorización ML, unidad bloqueada), 501 contrato no conectado.
 
-Ver tabla operativa en `SEBASTIAN_API_REQUESTS.md`.
+`mlLiquidationState` aparece en el tipo TypeScript como campo tentativo de UI. No es contrato OpenAPI hasta confirmación de Sebastián.
+
+Ver tabla operativa en `SEBASTIAN_API_REQUESTS.md` y la matriz honesta en `SCOPE_AUDIT.md`.

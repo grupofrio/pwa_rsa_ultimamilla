@@ -61,4 +61,29 @@ describe('HttpApiAdapter', () => {
     expect(api.kind).toBe('http')
     await expect(api.listRoutes()).rejects.toMatchObject({ status: 501 })
   })
+
+  it('does not talk to Odoo and returns null session without public API base URL', async () => {
+    const api = new HttpApiAdapter()
+    await expect(api.getSession()).resolves.toBeNull()
+    expect(JSON.stringify(api)).not.toMatch(/ODOO/i)
+  })
+})
+
+describe('settlement eligibility source', () => {
+  it('lists a closed operational route that is not liquidatable regardless of the tentative ML field', async () => {
+    const api = new MockApiAdapter()
+    await api.login('diego.admin@viaagil.example')
+    const route = await api.getRoute('rt_2406')
+    expect(route.state).toBe('closed_operationally')
+    expect(route.mlLiquidationState).toBe('pending')
+  })
+
+  it('exposes fuel estimates from the backend mock instead of a UI constant', async () => {
+    const api = new MockApiAdapter()
+    await api.login('diego.admin@viaagil.example')
+    const routes = await api.listRoutes()
+    const inRoute = routes.items.find((item) => item.id === 'rt_2404')
+    expect(inRoute?.fuelEstimate?.liters).toBeTypeOf('number')
+    expect(inRoute?.fuelEstimate?.amount?.kind).toBe('estimate')
+  })
 })

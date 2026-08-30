@@ -429,6 +429,9 @@ function toSummary(route: RouteDetail): RouteSummary {
     distance: route.distance,
     journeyLeg: route.journeyLeg,
     provenance: route.provenance,
+    fuelEstimate: route.fuelSuggestion
+      ? { liters: route.fuelSuggestion.suggestedLiters, amount: route.fuelSuggestion.suggestedAmount }
+      : null,
   }
 }
 

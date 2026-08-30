@@ -65,6 +65,10 @@ export interface RouteSummary {
   distance: DistanceBreakdown
   journeyLeg: JourneyLeg
   provenance: DataProvenance
+  fuelEstimate: {
+    liters: number | null
+    amount: Money | null
+  } | null
 }
 
 export interface RouteDetail extends RouteSummary {

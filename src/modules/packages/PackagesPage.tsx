@@ -1,5 +1,5 @@
 import { Badge, DataTable, ErrorState, MockBanner, PageHeader, Provenance, Skeleton } from '@/design-system/components/ui'
-import { PACKAGE_STATE_LABELS } from '@/entities/states'
+import { isOfficiallyLiquidatable, PACKAGE_STATE_LABELS } from '@/entities/states'
 import { formatDateTime } from '@/format'
 import { useApi } from '@/services/api/useApi'
 import { useAuth } from '@/auth/AuthProvider'
@@ -103,7 +103,7 @@ export function ReturnsPage() {
 export function RouteDetailPage() {
   const { id = '' } = useParams()
   const api = useApi()
-  const { user, can } = useAuth()
+  const { user } = useAuth()
   const query = useQuery({ queryKey: ['route', id], enabled: Boolean(api && id), queryFn: () => api!.getRoute(id) })
   if (!user) return null
   if (query.isLoading) return <Skeleton />
@@ -129,8 +129,10 @@ export function RouteDetailPage() {
           <p className="text-sm">Ingreso esperado {route.commercial.expectedRevenue.amount} {route.commercial.expectedRevenue.kind === 'estimate' ? '(estimación)' : '(oficial)'}</p>
           <p className="text-sm">Reconocido {route.commercial.recognizedRevenue ? `${route.commercial.recognizedRevenue.amount} oficial` : 'aún no'}</p>
           <p className="mt-2 text-xs text-[var(--va-muted)]">{route.commercial.note}</p>
-          {!can('settlement.force_liquidatable') && route.mlLiquidationState !== 'confirmed' ? (
-            <p className="mt-2 text-sm" data-testid="not-liquidatable">Completada o no, esta ruta todavía no es liquidable. No hay acción para forzarla.</p>
+          {!isOfficiallyLiquidatable(route.state) ? (
+            <p className="mt-2 text-sm" data-testid="not-liquidatable">
+              Completada o no, esta ruta todavía no es liquidable según el estado oficial del backend. No hay acción para forzarla.
+            </p>
           ) : null}
         </article>
       </div>

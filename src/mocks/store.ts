@@ -243,6 +243,7 @@ function route(partial: {
   cost: number
 }): RouteDetail {
   const hasDiff = partial.expected !== partial.received || partial.received !== partial.loaded
+  const fuelSuggestion = fuel(partial.id, partial.officialKm ?? 110, partial.actualKm, 8.4, 420, 50, 'medium')
   return {
     id: partial.id,
     folio: partial.folio,
@@ -274,7 +275,11 @@ function route(partial: {
     plannedPath: gdl,
     actualPath: gdl.slice(0, 3),
     events: [event(`${partial.id}_plan`, 200, 'Despacho', 'PWA', 'CEDIS GDL', 'Ruta programada en ventana AM')],
-    fuelSuggestion: fuel(partial.id, partial.officialKm ?? 110, partial.actualKm, 8.4, 420, 50, 'medium'),
+    fuelSuggestion,
+    fuelEstimate: {
+      liters: fuelSuggestion.suggestedLiters,
+      amount: fuelSuggestion.suggestedAmount,
+    },
     commercial: commercial(partial.band, partial.expectedRev, partial.recognized, partial.cost),
   }
 }
@@ -662,7 +667,7 @@ export function createInitialStore(): MutableStore {
       {
         id: 'cp_2',
         title: 'No forzar liquidación de R-GDLR-2406',
-        body: 'La ruta está cerrada operativamente pero ml_liquidation_state sigue pendiente. El cobro de Vía Ágil no aplica todavía.',
+        body: 'La ruta está cerrada operativamente y el backend aún no la declara liquidable. El cobro de Vía Ágil no aplica. El nombre de campo tentativo de liquidación ML no es contrato oficial.',
         period: 'Corte 29 ago 2026',
         confidence: 'high',
         cited: ['Estado de ruta', 'Fuente oficial Mercado Libre'],
