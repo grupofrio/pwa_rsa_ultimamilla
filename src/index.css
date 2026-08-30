@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+:root {
+  --va-navy: #081c2c;
+  --va-navy-600: #0e2b42;
+  --va-navy-400: #1c4b6e;
+  --va-teal: #12b8a6;
+  --va-teal-700: #0b7c71;
+  --va-amber: #f5a623;
+  --va-amber-700: #b86f08;
+  --va-bg: #f4f7fa;
+  --va-surface: #ffffff;
+  --va-ink: #0e2233;
+  --va-muted: #4d6273;
+  --va-line: #d5dee7;
+  --va-info: #1565c0;
+  --va-danger: #b42318;
+  --va-success: #0f7a4a;
+  --va-warning: #b86f08;
+  --va-focus: #0b7c71;
+  --va-radius: 14px;
+  --va-shadow: 0 10px 30px rgba(8, 28, 44, 0.08);
+  font-family: "Segoe UI", "Source Sans 3", system-ui, sans-serif;
+  color: var(--va-ink);
+  background: var(--va-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@theme inline {
+  --color-navy: var(--va-navy);
+  --color-teal: var(--va-teal);
+  --color-amber: var(--va-amber);
+  --color-canvas: var(--va-bg);
+  --color-ink: var(--va-ink);
+  --color-muted: var(--va-muted);
+  --color-line: var(--va-line);
+  --color-danger: var(--va-danger);
+  --color-success: var(--va-success);
+}
+
+html,
+body,
+#root {
+  min-height: 100dvh;
+  margin: 0;
+}
+
+body {
+  background: var(--va-bg);
+}
+
+:focus-visible {
+  outline: 3px solid var(--va-focus);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.va-dark {
+  --va-bg: #07131e;
+  --va-surface: #0c1d2c;
+  --va-ink: #eef5f8;
+  --va-muted: #9db0bf;
+  --va-line: #1e364a;
+  --va-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
