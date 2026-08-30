@@ -2,8 +2,9 @@
 /** Comprueba que el build de producción dejó manifiest y service worker. */
 import { access } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const dist = new URL('../dist', import.meta.url).pathname
+const dist = fileURLToPath(new URL('../dist', import.meta.url))
 const required = ['index.html', 'sw.js', 'manifest.webmanifest']
 
 const missing = []

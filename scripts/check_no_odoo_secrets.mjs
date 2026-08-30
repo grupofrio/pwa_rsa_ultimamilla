@@ -5,8 +5,9 @@
  */
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const ROOT = new URL('..', import.meta.url).pathname
+const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const FORBIDDEN = ['ODOO_PASSWORD', 'ODOO_PASS', 'META_ACCESS_TOKEN', 'WA_PHONE_NUMBER_ID', 'kold-secret-dev']
 const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'coverage', 'playwright-report', 'test-results'])
 const SCAN_ROOTS = ['src', 'public', 'e2e']

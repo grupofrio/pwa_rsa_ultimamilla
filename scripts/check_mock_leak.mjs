@@ -5,9 +5,10 @@
  */
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const SENTINELS = ['VIA_AGIL_MOCK_SENTINEL', 'simulador-de-sesion-mock']
-const dist = new URL('../dist', import.meta.url).pathname
+const dist = fileURLToPath(new URL('../dist', import.meta.url))
 
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true })
