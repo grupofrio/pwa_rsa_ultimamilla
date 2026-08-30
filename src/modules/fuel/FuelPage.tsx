@@ -41,7 +41,11 @@ export function FuelPage() {
     <div className="space-y-4">
       <PageHeader title="Combustible" subtitle="La sugerencia explica, no inventa certeza. Autorizar requiere capacidad, motivo y comprobante." />
       {api.kind === 'mock' ? <MockBanner>Montos sugeridos son estimación. No hay litros hardcodeados de negocio en producción: llegan del backend.</MockBanner> : null}
-      {message ? <p role="status">{message}</p> : null}
+      {message ? (
+        <p role="status" data-testid="fuel-feedback">
+          {message}
+        </p>
+      ) : null}
       <DataTable
         caption="Sugerencias de combustible"
         rows={query.data?.items ?? []}

@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { MockApiAdapter } from '@/services/api/adapters/mock'
 import { HttpApiAdapter } from '@/services/api/adapters/http'
 import { ApiError } from '@/services/api/errors'
 
 describe('MockApiAdapter', () => {
+  beforeEach(() => {
+    sessionStorage.clear()
+  })
   it('blocks exit when load differs', async () => {
     const api = new MockApiAdapter()
     await api.login('ana.despacho@viaagil.example')
