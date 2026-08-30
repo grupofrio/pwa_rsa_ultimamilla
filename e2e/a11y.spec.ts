@@ -45,7 +45,7 @@ async function scan(page) {
       id: v.id,
       impact: v.impact,
       description: v.description,
-      nodes: v.nodes.length,
+      nodes: v.nodes.map((n) => ({ html: n.html, target: n.target, failureSummary: n.failureSummary })),
     })),
     passes: results.passes.length,
   }
