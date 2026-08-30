@@ -5,11 +5,11 @@ test.describe('flujos críticos', () => {
   test('dispatcher no confirma salida con diferencia ni sin autorización de Mercado Libre', async ({ page }) => {
     await login(page, 'ana.despacho@viaagil.example')
     await page.goto('/despacho')
-    await expect(page.getByText('Diferencia')).toBeVisible()
+    await expect(page.getByText('Diferencia', { exact: true }).first()).toBeVisible()
     await page.getByTestId('exit-rt_2402').click()
     await page.getByRole('button', { name: 'Registrar hito de salida' }).click()
     await expect(page.getByRole('alert')).toContainText(/diferencia|Mercado Libre/i)
-    await page.getByRole('button', { name: 'Resolver faltantes (mock)' }).click()
+    await page.getByTestId('resolve-diff-rt_2402').click()
     await page.getByTestId('exit-rt_2402').click()
     await page.getByRole('button', { name: 'Registrar hito de salida' }).click()
     await expect(page.getByRole('alert')).toContainText(/Mercado Libre/i)
@@ -27,7 +27,7 @@ test.describe('flujos críticos', () => {
     await page.getByRole('button', { name: 'Guardar contacto' }).click()
     await page.getByTestId('resolve-al_dev_2404').click()
     await page.getByLabel('Motivo').fill('Conductor confirmó retorno a secuencia oficial')
-    await page.getByRole('button', { name: 'Resolver' }).click()
+    await page.getByRole('dialog').getByRole('button', { name: 'Resolver' }).click()
     await expect(page.getByText('resolved')).toBeVisible()
   })
 
@@ -35,7 +35,7 @@ test.describe('flujos críticos', () => {
     await login(page, 'diego.admin@viaagil.example')
     await page.goto('/combustible')
     await page.getByTestId('fuel-rt_2404').click()
-    await page.getByRole('button', { name: 'Autorizar' }).click()
+    await page.getByRole('dialog').getByRole('button', { name: 'Autorizar' }).click()
     await expect(page.getByRole('status')).toContainText(/Autorización registrada/)
   })
 
@@ -61,7 +61,9 @@ test.describe('flujos críticos', () => {
     await page.getByTestId('switch-tenant').click()
     await page.getByRole('button', { name: 'Cambiar tenant' }).click()
     await expect(page.getByTestId('tenant-banner')).toBeVisible()
-    await page.goto('/auditoria')
+    const menu = page.getByRole('button', { name: 'Abrir menú' })
+    if (await menu.isVisible()) await menu.click()
+    await page.getByRole('link', { name: 'Auditoría' }).click()
     await expect(page.getByText('csc.tenant.switch')).toBeVisible()
   })
 
@@ -79,7 +81,7 @@ test.describe('flujos críticos', () => {
     await page.getByRole('button', { name: 'Simular sesión expirada' }).click()
     await page.goto('/despacho')
     await expect(page).toHaveURL(/login/)
-    await expect(page.getByRole('status')).toContainText(/expiró/)
+    await expect(page.getByText('La sesión expiró')).toBeVisible()
   })
 
   test('corte de red bloquea acciones críticas', async ({ page }) => {
@@ -89,8 +91,8 @@ test.describe('flujos críticos', () => {
     await page.goto('/combustible')
     await expect(page.getByTestId('offline-banner')).toBeVisible()
     await page.getByTestId('fuel-rt_2404').click()
-    await page.getByRole('button', { name: 'Autorizar' }).click()
-    await expect(page.getByText(/Sin conexión|No autorizado/i)).toBeVisible()
+    await page.getByRole('dialog').getByRole('button', { name: 'Autorizar' }).click()
+    await expect(page.getByTestId('fuel-feedback')).toContainText(/acciones críticas están bloqueadas/)
   })
 
   test('navegación por teclado', async ({ page }) => {

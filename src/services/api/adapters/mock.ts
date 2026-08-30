@@ -51,13 +51,40 @@ export class MockApiAdapter implements ApiClient {
   readonly sentinel = MOCK_SENTINEL
   private store: MutableStore = createInitialStore()
 
-  reset(): void {
-    this.store = createInitialStore()
+  constructor() {
+    this.restoreBrowserFlags()
   }
 
-  private requireUser(capability?: Capability): { user: SessionUser; correlationId: string } {
+  private restoreBrowserFlags(): void {
+    if (typeof sessionStorage === 'undefined') return
+    const userId = sessionStorage.getItem('va.mock.userId')
+    const expired = sessionStorage.getItem('va.mock.expired') === '1'
+    const online = sessionStorage.getItem('va.mock.offline') !== '1'
+    this.store.currentUserId = userId
+    this.store.expired = expired
+    this.store.online = online
+  }
+
+  private persistBrowserFlags(): void {
+    if (typeof sessionStorage === 'undefined') return
+    if (this.store.currentUserId) sessionStorage.setItem('va.mock.userId', this.store.currentUserId)
+    else sessionStorage.removeItem('va.mock.userId')
+    sessionStorage.setItem('va.mock.expired', this.store.expired ? '1' : '0')
+    sessionStorage.setItem('va.mock.offline', this.store.online ? '0' : '1')
+    window.dispatchEvent(new Event('va-connection'))
+  }
+
+  reset(): void {
+    this.store = createInitialStore()
+    sessionStorage.removeItem('va.mock.userId')
+    sessionStorage.removeItem('va.mock.expired')
+    sessionStorage.removeItem('va.mock.offline')
+    this.persistBrowserFlags()
+  }
+
+  private requireUser(capability?: Capability, write = false): { user: SessionUser; correlationId: string } {
     const correlationId = cid()
-    if (!this.store.online && capability && capability !== 'session.view') offline(correlationId)
+    if (!this.store.online && write) offline(correlationId)
     if (this.store.expired) expired(correlationId)
     const user = this.store.users.find((item) => item.id === this.store.currentUserId)
     if (!user) expired(correlationId)
@@ -66,7 +93,7 @@ export class MockApiAdapter implements ApiClient {
   }
 
   private requireCommand(meta: CommandMeta, capability: Capability): SessionUser {
-    const { user } = this.requireUser(capability)
+    const { user } = this.requireUser(capability, true)
     if (meta.capability !== capability) deny(cid(), 'La capacidad del comando no coincide.')
     if (!meta.idempotencyKey) deny(cid(), 'Falta idempotency key.')
     return user
@@ -84,7 +111,8 @@ export class MockApiAdapter implements ApiClient {
   }
 
   async getSession(): Promise<SessionUser | null> {
-    if (this.store.expired || !this.store.currentUserId) return null
+    if (this.store.expired) expired(cid())
+    if (!this.store.currentUserId) return null
     return this.store.users.find((item) => item.id === this.store.currentUserId) ?? null
   }
 
@@ -100,6 +128,7 @@ export class MockApiAdapter implements ApiClient {
     }
     this.store.expired = false
     this.store.currentUserId = user.id
+    this.persistBrowserFlags()
     this.audit(user.displayName, 'session.login', user.id, 'Simulador de sesión')
     return user
   }
@@ -107,6 +136,7 @@ export class MockApiAdapter implements ApiClient {
   async logout(): Promise<void> {
     this.store.currentUserId = null
     this.store.expired = false
+    this.persistBrowserFlags()
   }
 
   async switchScope(scopeId: string): Promise<SessionUser> {
@@ -334,10 +364,12 @@ export class MockApiAdapter implements ApiClient {
 
   async expireSession(): Promise<void> {
     this.store.expired = true
+    this.persistBrowserFlags()
   }
 
   async setNetwork(online: boolean): Promise<void> {
     this.store.online = online
+    this.persistBrowserFlags()
   }
 
   getNetwork() {

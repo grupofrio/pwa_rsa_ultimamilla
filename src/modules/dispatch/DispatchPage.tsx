@@ -147,6 +147,7 @@ export function DispatchPage() {
                         client.invalidateQueries({ queryKey: ['routes'] }),
                       )
                     }}
+                    data-testid={`resolve-diff-${row.id}`}
                   >
                     Resolver faltantes (mock)
                   </Button>
