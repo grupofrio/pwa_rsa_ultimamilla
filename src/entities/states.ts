@@ -80,6 +80,10 @@ export const JOURNEY_LEG_LABELS: Record<JourneyLeg, string> = {
   off_policy: 'Uso fuera de horario o geografía autorizada',
 }
 
+/**
+ * Campo TENTATIVO de UI. No es contrato oficial hasta que Sebastián lo confirme.
+ * El frontend no usa este valor para decidir elegibilidad de cobro.
+ */
 export const ML_LIQUIDATION_STATES = [
   'pending',
   'confirmed',
@@ -90,10 +94,15 @@ export const ML_LIQUIDATION_STATES = [
 export type MlLiquidationState = (typeof ML_LIQUIDATION_STATES)[number]
 
 export const ML_LIQUIDATION_LABELS: Record<MlLiquidationState, string> = {
-  pending: 'Pendiente de confirmación oficial de Mercado Libre',
-  confirmed: 'Confirmada por fuente oficial',
-  rejected: 'Rechazada por fuente oficial',
-  not_applicable: 'No aplica',
+  pending: 'Pendiente de confirmación oficial (campo tentativo)',
+  confirmed: 'Confirmada por fuente oficial (campo tentativo)',
+  rejected: 'Rechazada por fuente oficial (campo tentativo)',
+  not_applicable: 'No aplica (campo tentativo)',
+}
+
+/** Elegibilidad de cobro: solo el estado de ruta que declara el backend. */
+export function isOfficiallyLiquidatable(state: RouteState): boolean {
+  return state === 'liquidatable' || state === 'settled'
 }
 
 export const DATA_QUALITY = ['ok', 'stale', 'degraded', 'missing'] as const

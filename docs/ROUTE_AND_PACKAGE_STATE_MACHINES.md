@@ -16,4 +16,4 @@ Etiquetas UI en español: ver `src/entities/states.ts`.
 
 Ramas: `cancelled`, `reversed`.
 
-`exit_authorized` exige autorización de Mercado Libre registrada. `liquidatable` exige fuente oficial confirmada + banda válida + sin corte activo. Validar internamente o completar la ruta **no** genera cobro.
+`exit_authorized` exige autorización de Mercado Libre registrada. `liquidatable` lo declara **el backend** (fuente oficial + banda válida + sin corte activo). El frontend no combina campos tentativos (`mlLiquidationState`) para decidir cobro. Validar internamente o completar la ruta **no** genera cobro.

@@ -8,6 +8,7 @@ export default function LiveMap({ routes }: { routes: RouteSummary[] }) {
     <MapContainer center={center} zoom={12} className="h-[420px] w-full" scrollWheelZoom={false} aria-label="Mapa de unidades">
       <TileLayer attribution="&copy; OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {routes.map((route, index) => {
+        // Posiciones sintéticas de demostración. La telemetría real debe llegar del backend.
         const lat = center[0] + index * 0.008
         const lng = center[1] - index * 0.01
         return (

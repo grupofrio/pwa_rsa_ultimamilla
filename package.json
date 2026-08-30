@@ -6,14 +6,18 @@
   "description": "Vía Ágil Control — inteligencia operativa de última milla",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/check_mock_leak.mjs",
+    "build": "node scripts/check_no_odoo_secrets.mjs && tsc -b && vite build && node scripts/check_mock_leak.mjs && node scripts/check_pwa.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "lint": "eslint .",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "check:mock-leak": "node scripts/check_mock_leak.mjs"
+    "test:e2e:pwa": "playwright test -c playwright.pwa.config.ts",
+    "check:mock-leak": "node scripts/check_mock_leak.mjs",
+    "check:secrets": "node scripts/check_no_odoo_secrets.mjs",
+    "check:pwa": "node scripts/check_pwa.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.85.5",
@@ -26,6 +30,7 @@
     "zod": "^4.1.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.34.0",
     "@playwright/test": "^1.55.0",
     "@tailwindcss/vite": "^4.1.12",
@@ -37,6 +42,7 @@
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.2",
+    "@vitest/coverage-v8": "^3.2.7",
     "eslint": "^9.34.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

@@ -24,11 +24,13 @@ El frontend avanza con `MockApiAdapter`. `HttpApiAdapter` falla cerrado (501) ha
 | Gerencia | KPI / copiloto | GET /management/kpis | period | KPIs kind-tagged | management.view | no | Pendiente | Sebastián |
 | Auditoría | Bitácora | GET /audit | filtros | page | audit.view | no | Pendiente | Sebastián |
 
+Ningún nombre de campo de esta tabla está confirmado por Sebastián. `mlLiquidationState` / `ml_liquidation_state` es **tentativo de UI** y no debe consolidarse como contrato.
+
 Reglas que el servidor debe imponer (el UI solo las refleja):
 
 1. No confirmar salida con diferencia de paquetes.
 2. No confirmar salida sin autorización de Mercado Libre.
-3. No liquidar sin `ml_liquidation_state = confirmed`.
-4. No autorizar combustible/nómina/factura/liquidación sin capacidad y, si aplica, doble aprobación.
+3. No liquidar salvo que el backend declare la ruta `liquidatable` o `settled`. Completar la ruta no basta. El campo tentativo ML no decide cobro.
+4. No autorizar combustible/nómina/factura/liquidación sin capacidad y, si aplica, doble aprobación. Litros y montos los calcula el backend.
 5. CSC no aprueba dinero salvo delegación temporal auditada.
-6. Eventos GPS, POD y escaneo son inmutables.
+6. Eventos GPS, POD y escaneo son inmutables. Geocercas, km y P&L oficiales no se inventan en el navegador.
